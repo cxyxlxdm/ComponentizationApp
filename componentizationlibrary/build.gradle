@@ -1,0 +1,48 @@
+//Properties properties = new Properties()
+//File propertyFile = new File(rootDir.absolutePath + "/gradle.properties")
+//properties.load(propertyFile.newDataInputStream())
+//boolean isDebug = properties.getProperty("isDebug")
+
+println isDebug.toBoolean()
+if (isDebug.toBoolean()) {
+    apply plugin: 'com.android.application'
+    apply from: rootDir.absolutePath + '/extra_config.gradle'
+} else {
+    apply plugin: 'com.android.library'
+}
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            if (isDebug.toBoolean()) {
+                manifest.srcFile 'src/main/debug/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/release/AndroidManifest.xml'
+            }
+        }
+    }
+}
+
+dependencies {
+//    if (isDebug.toBoolean()) {
+        compile 'com.android.support:appcompat-v7:24.2.1'
+        compile 'com.android.support:design:24.2.1'
+//    } else {
+//        provided fileTree(dir: project(':app').projectDir.absolutePath + 'outputs/jar/', include: 'sharedDependency.jar')
+//    }
+}
