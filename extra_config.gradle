@@ -6,9 +6,7 @@ android.applicationVariants.all { ApkVariant variant ->
     task.archiveName = 'sharedDependency.jar'
     task.dependsOn variant.javaCompiler
     task.outputs.upToDateWhen { false }
-    //Include Java classes
     task.from variant.javaCompiler.destinationDir
-    //Include dependent jars with some exceptions
     variant.apkLibraries.each {
         task.from zipTree(it)
     }
