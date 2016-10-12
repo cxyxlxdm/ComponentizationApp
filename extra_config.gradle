@@ -1,48 +1,17 @@
 ext.sharedArtifactids = this.&sharedArtifactids
 
-tasks.whenTaskAdded { task ->
-    if (task.name.equals("compileDebugJavaWithJavac")) {
-        task.doLast {
-            FileCollection fileCollection = task.inputs.files
-            File file = new File(project.projectDir.absolutePath + '/dependency.txt')
-            if (file.exists()) {
-                file.delete()
-            }
-            file.createNewFile()
-
-            fileCollection.files.each {
-                if (project.name.equals('app')) {
-                    project.sharedArtifactids.each { String artifactId ->
-                        if (it.absolutePath.contains(artifactId) && !it.name.endsWith('.java')) {
-                            file.append(it.absolutePath + '\n')
-                        }
-                    }
-                }
-            }
-        }
+android.applicationVariants.all { ApkVariant variant ->
+    def buildTypeName = variant.buildType.name
+    def task = project.tasks.create "jar${buildTypeName.capitalize()}", Jar
+    task.archiveName = 'sharedDependency.jar'
+    task.dependsOn variant.javaCompiler
+    task.outputs.upToDateWhen { false }
+    //Include Java classes
+    task.from variant.javaCompiler.destinationDir
+    //Include dependent jars with some exceptions
+    variant.apkLibraries.each {
+        task.from zipTree(it)
     }
-}
-
-task createSharedDependency(dependsOn: 'assembleDebug', type: Jar) {
-    outputs.upToDateWhen { false }
-    archiveName = 'sharedDependency.jar'
-    File jarsPathFile = new File(project.projectDir.absolutePath + '/dependency.txt')
-    if (!jarsPathFile.exists()) {
-        jarsPathFile.createNewFile()
-    }
-    def lines = jarsPathFile.readLines()
-    ConfigurableFileCollection fileCollection = files(lines)
-    fileCollection.each { File file ->
-        from(zipTree(file))
-    }
-    from(project.buildDir.absolutePath + "/intermediates/classes/debug") {
-        include 'cn/easydone/*/*.class'
-        exclude 'cn/easydone/*/R*.class'
-        exclude 'cn/easydone/*/BuildConfig.class'
-    }
-
-    destinationDir = file(project.projectDir.absolutePath + "/outputs/jar")
-}
-afterEvaluate {
-    tasks.findByName('assembleDebug').finalizedBy(createSharedDependency)
+    task.destinationDir = file(project.buildDir.absolutePath + "/outputs/jar")
+    artifacts.add('archives', task)
 }
