@@ -1,12 +1,8 @@
-//Properties properties = new Properties()
-//File propertyFile = new File(rootDir.absolutePath + "/gradle.properties")
-//properties.load(propertyFile.newDataInputStream())
-//boolean isDebug = properties.getProperty("isDebug")
+import com.android.build.gradle.api.ApkVariant
 
 println isDebug.toBoolean()
 if (isDebug.toBoolean()) {
     apply plugin: 'com.android.application'
-    apply from: rootDir.absolutePath + '/extra_config.gradle'
 } else {
     apply plugin: 'com.android.library'
 }
@@ -39,10 +35,20 @@ android {
 }
 
 dependencies {
-//    if (isDebug.toBoolean()) {
-        compile 'com.android.support:appcompat-v7:24.2.1'
-        compile 'com.android.support:design:24.2.1'
-//    } else {
-//        provided fileTree(dir: project(':app').projectDir.absolutePath + 'outputs/jar/', include: 'sharedDependency.jar')
-//    }
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
 }
+
+if (isDebug.toBoolean()) {
+    android.applicationVariants.all { ApkVariant variant ->
+        def buildTypeName = variant.buildType.name
+        def task = project.tasks.create "jar${buildTypeName.capitalize()}", Jar
+        task.archiveName = 'sharedDependency.jar'
+        task.dependsOn variant.javaCompiler
+        task.outputs.upToDateWhen { false }
+        task.from variant.javaCompiler.destinationDir
+        task.destinationDir = file(projectDir.absolutePath + "/outputs/jar")
+        artifacts.add('archives', task)
+    }
+}
+

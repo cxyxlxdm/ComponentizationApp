@@ -32,12 +32,8 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(MainActivity.this, LibraryActivity.class);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent(MainActivity.this, LibraryActivity.class);
+                startActivity(intent);
             }
         });
     }

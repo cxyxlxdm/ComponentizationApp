@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply from: rootDir.absolutePath + '/extra_config.gradle'
 
 android {
     compileSdkVersion 24
@@ -29,6 +28,3 @@ dependencies {
         compile 'com.android.support:design:24.2.1'
     }
 }
-
-
-sharedArtifactids = ['appcompat-v7', 'design']
