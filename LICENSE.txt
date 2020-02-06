@@ -1,0 +1,13 @@
+Liangzhitao is pleased to support the open source community by making android modularization app available.
+
+If you have downloaded a copy of the this project, please note that the this repo
+is licensed under the BSD 3-Clause License.
+
+
+If you have downloaded a copy of the ComponentizationApp source code from Tencent, please note that ComponentizationApp
+source code is licensed under the BSD 3-Clause License, except for the third-party components
+listed below which are subject to different license terms.  Your integration of ComponentizationApp into your own
+projects may require compliance with the BSD 3-Clause License, as well as the other licenses
+applicable to the third-party components included within ComponentizationApp.
+
+A copy of the BSD 3-Clause License is included in this file.
